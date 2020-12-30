@@ -13,3 +13,7 @@ https://twitter.com/londontran<br>
 https://www.linkedin.com/in/londontran<br>
 https://stackoverflow.com/users/3932449/london-tran
 
+Single Line Chart             |  Triple Line Chart
+:-------------------------:|:-------------------------:
+<img src="images/singleLineChart.jpg" width="500">  |  <img src="images/tripleLineChart.jpg" width="500">
+
