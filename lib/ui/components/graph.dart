@@ -27,7 +27,7 @@ class _GraphState extends State<Graph> {
     'LTC': [],
   };
 
-  Map<String, List<double>> minAndMaxTriple = {
+  Map<String, List<double>> minAndMaxForTripleDataGraph = {
     'min': [],
     'max': [],
   };
@@ -35,11 +35,9 @@ class _GraphState extends State<Graph> {
   double minY;
   double maxY;
   double maxX;
-  // double factor;
 
-  //min and max Y for triple data graphs
-  double minYTriple;
-  double maxYTriple;
+  double minYForTripleDataGraph;
+  double maxYForTripleDataGraph;
 
   var graphColor;
 
@@ -111,34 +109,22 @@ class _GraphState extends State<Graph> {
   }
 
   void getMinAndMaxPrices(List<double> prices) {
-    getMinAndMaxSingleData(prices);
-    getMinAndMaxTripleData(prices);
+    getMinAndMaxForSingleDataGraph(prices);
+    getMinAndMaxForTripleDataGraph(prices);
   }
 
-  void getMinAndMaxSingleData(List<double> prices) {
+  void getMinAndMaxForSingleDataGraph(List<double> prices) {
     minY = prices.reduce(min);
     maxY = prices.reduce(max);
     maxX = prices.length.toDouble();
-
-    print("minY");
-    print(minY);
-    print("maxY");
-    print(maxY);
-    print("maxX");
-    print(maxX);
   }
 
-  void getMinAndMaxTripleData(List<double> prices) {
-    minAndMaxTriple['min'].add(prices.reduce(min));
-    minAndMaxTriple['max'].add(prices.reduce(max));
+  void getMinAndMaxForTripleDataGraph(List<double> prices) {
+    minAndMaxForTripleDataGraph['min'].add(prices.reduce(min));
+    minAndMaxForTripleDataGraph['max'].add(prices.reduce(max));
 
-    minYTriple = minAndMaxTriple['min'].reduce(min);
-    maxYTriple = minAndMaxTriple['max'].reduce(max);
-
-    print("min Y Triple");
-    print(minYTriple);
-    print("max Y Triple");
-    print(maxYTriple);
+    minYForTripleDataGraph = minAndMaxForTripleDataGraph['min'].reduce(min);
+    maxYForTripleDataGraph = minAndMaxForTripleDataGraph['max'].reduce(max);
   }
 
   void getAxesLabels() {
@@ -252,16 +238,12 @@ class _GraphState extends State<Graph> {
           getTitles: (value) {
             //1st X-axis label 1/3 across
             if (value.toInt() == firstXAxisLabel) {
-              print("1st x-axis label for singleDataGraph");
-              print(firstXAxisLabel);
               return getXAxisLabels(firstXAxisLabel,
                   reversedPricesAndTimes['Times'], widget.graphType);
             }
 
             // 2nd X-axis label 2/3 across
             if (value.toInt() == secondXAxisLabel) {
-              print("2nd x-axis label for singleDataGraph");
-              print(secondXAxisLabel);
               return getXAxisLabels(secondXAxisLabel,
                   reversedPricesAndTimes['Times'], widget.graphType);
             }
@@ -280,29 +262,16 @@ class _GraphState extends State<Graph> {
 
             // 1st Y-axis label 1/4 of the way up
             if (value.toInt() == firstYAxisLabel) {
-              print("Y-axis for singleData Graph ran");
-              print("first Y axis label");
-              print(firstYAxisLabel);
-              print("formatNumber(firstAxisLabel");
-              print(formatNumber(firstYAxisLabel));
               return formatNumber(firstYAxisLabel);
             }
 
             //2nd Y-axis label 1/2 of the way up
             if (value.toInt() == secondYAxisLabel) {
-              print("second Y axis label");
-              print(secondYAxisLabel);
-              print("formatNumber(secondAxisLabel)");
-              print(formatNumber(secondYAxisLabel));
               return formatNumber(secondYAxisLabel);
             }
 
             //3rd Y-axis label 3/4 of the way up
             if (value.toInt() == thirdYAxisLabel) {
-              print("third Y axis label");
-              print(thirdYAxisLabel);
-              print("formatNumber(thirdAxisLabel)");
-              print(formatNumber(thirdYAxisLabel));
               return formatNumber(thirdYAxisLabel);
             }
             return '';
@@ -393,14 +362,12 @@ class _GraphState extends State<Graph> {
           getTitles: (value) {
             //1st X-axis label 1/3 across
             if (value.toInt() == firstXAxisLabel) {
-              print("1st x-axis label for tripleDataGraph");
               return getXAxisLabels(firstXAxisLabel,
                   reversedPricesAndTimes['Times'], widget.graphType);
             }
 
             // 2nd X-axis label 2/3 across
             if (value.toInt() == secondXAxisLabel) {
-              print("2nd x-axis label for singleDataGraph");
               return getXAxisLabels(secondXAxisLabel,
                   reversedPricesAndTimes['Times'], widget.graphType);
             }
@@ -455,8 +422,8 @@ class _GraphState extends State<Graph> {
       ),
       minX: 0,
       maxX: maxX,
-      maxY: maxYTriple,
-      minY: minYTriple,
+      maxY: maxYForTripleDataGraph,
+      minY: minYForTripleDataGraph,
       lineBarsData: linesBarData1(),
     );
   }
