@@ -1,7 +1,7 @@
 class DataPointsHelper {
-  DataPointsHelper(this.selectedGraphType);
+  DataPointsHelper(this.graphType);
 
-  String selectedGraphType;
+  String graphType;
   String _periodValue;
   int _numberOfDataPoints;
 
@@ -9,12 +9,12 @@ class DataPointsHelper {
 
   String get periodValue => _periodValue;
 
-  decideNumberOfDataPoints() {
-    switch (selectedGraphType) {
+  assignNumberOfDataPoints() {
+    switch (graphType) {
       case '1D': // 1 day in 5-minute intervals
         {
           _periodValue = '300';
-          _numberOfDataPoints = 289; //
+          _numberOfDataPoints = 289;
         }
         break;
       case '5D': // 5 days in 30-minute intervals

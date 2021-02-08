@@ -1,10 +1,11 @@
-import 'package:bitcoin_ticker/data/coin_data.dart';
-import 'package:bitcoin_ticker/ui/components/crypto_card.dart';
+import 'package:bitcoin_ticker/data/coin-data.dart';
+import 'package:bitcoin_ticker/ui/components/crypto-card.dart';
 import 'package:bitcoin_ticker/ui/components/graph.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../../constants.dart';
 import 'package:crypto_font_icons/crypto_font_icons.dart';
+import '../components/toggle-button.dart';
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -12,25 +13,23 @@ class PriceScreen extends StatefulWidget {
 }
 
 class PriceScreenState extends State<PriceScreen> {
-  String selectedCurrency = 'USD';
-  String selectedGraphType = '5Y';
-  String selectedCrypto = 'LTC';
-  Map<String, List<String>> closingTimesAndClosingPrices = {};
+  String currency = 'USD';
+  String graphType = '1M';
+  String crypto = 'LTC';
+  Map<String, List<String>> pricesAndTimes = {};
   Future<Map> futureData;
 
   var isSelectedCrypto = <bool>[false, false, true];
-  var isSelectedGraph = <bool>[false, false, false, false, true];
+  var isSelectedGraph = <bool>[false, false, true, false, false];
   var isSelectedCurrency = <bool>[true, false, false];
 
   Future<Map> getData() async {
     try {
-      closingTimesAndClosingPrices =
-          await CoinData(selectedCurrency, selectedGraphType).getCoinData();
+      pricesAndTimes = await CoinData(currency, graphType).getCoinData();
     } catch (e) {
-      //TODO: Message and retry button if data not fetched in 10 seconds
       print(e);
     }
-    return closingTimesAndClosingPrices;
+    return pricesAndTimes;
   }
 
   @override
@@ -54,51 +53,34 @@ class PriceScreenState extends State<PriceScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      // Expanded(
-                      //     child: (snapshot.connectionState ==
-                      //         ConnectionState.waiting)
-                      //         ? Container()
-                      //         : Graph(snapshot.data, selectedCrypto)),
-
                       Center(
                           child: ToggleButtons(
                         borderWidth: 10,
                         children: <Widget>[
                           CryptoCard(
-                            selectedCurrency,
+                            currency,
                             snapshot.connectionState == ConnectionState.waiting
                                 ? '---'
-                                : closingTimesAndClosingPrices[
-                                    'currentCoinPrices'][0],
+                                : pricesAndTimes['currentCoinPrices'][0],
                             'Bitcoin',
                             Icon(CryptoFontIcons.BTC),
                           ),
                           CryptoCard(
-                              selectedCurrency,
+                              currency,
                               snapshot.connectionState ==
                                       ConnectionState.waiting
                                   ? '---'
-                                  : closingTimesAndClosingPrices[
-                                      'currentCoinPrices'][1],
+                                  : pricesAndTimes['currentCoinPrices'][1],
                               'Ethereum',
                               Icon(CryptoFontIcons.ETH)),
                           CryptoCard(
-                              selectedCurrency,
+                              currency,
                               snapshot.connectionState ==
                                       ConnectionState.waiting
                                   ? '---'
-                                  : closingTimesAndClosingPrices[
-                                      'currentCoinPrices'][2],
+                                  : pricesAndTimes['currentCoinPrices'][2],
                               'Litecoin',
                               Icon(CryptoFontIcons.LTC)),
-                          // Cards(
-                          //         isWaiting:
-                          //             snapshot.connectionState ==
-                          //                 ConnectionState.waiting,
-                          //         selectedCurrency:
-                          //             selectedCurrency,
-                          //         coinData: coinData)
-                          //     .makeCards(),
                         ],
                         onPressed: (int index) {
                           setState(() {
@@ -107,10 +89,7 @@ class PriceScreenState extends State<PriceScreen> {
                                 buttonIndex++) {
                               if (buttonIndex == index) {
                                 isSelectedCrypto[buttonIndex] = true;
-                                selectedCrypto =
-                                    cryptoAbbreviation[buttonIndex];
-                                print("selectedCrypto");
-                                print(selectedCrypto);
+                                crypto = cryptoAbbreviation[buttonIndex];
                               } else {
                                 isSelectedCrypto[buttonIndex] = false;
                               }
@@ -124,38 +103,17 @@ class PriceScreenState extends State<PriceScreen> {
                         renderBorder: false,
                         fillColor: Colors.transparent,
                       )),
-                      // MakeCards(
-                      // isWaiting: snapshot.connectionState ==
-                      // ConnectionState.waiting,
-                      // selectedCurrency: selectedCurrency,
-                      // coinData: coinData)
-                      //     .makeCards(),
                       Center(
                         child: ToggleButtons(
                           borderWidth: 0.0,
                           splashColor: null,
                           renderBorder: false,
                           children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Text('1D'),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Text('5D'),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Text('1M'),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Text('1Y'),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Text('5Y'),
-                            ),
+                            ToggleButton('1D'),
+                            ToggleButton('5D'),
+                            ToggleButton('1M'),
+                            ToggleButton('1Y'),
+                            ToggleButton('5Y'),
                           ],
                           onPressed: (int index) {
                             setState(() {
@@ -164,9 +122,7 @@ class PriceScreenState extends State<PriceScreen> {
                                   buttonIndex++) {
                                 if (buttonIndex == index) {
                                   isSelectedGraph[buttonIndex] = true;
-                                  selectedGraphType = graphType[buttonIndex];
-                                  print("selectedGraphType");
-                                  print(selectedGraphType);
+                                  graphType = graphTypeList[buttonIndex];
                                 } else {
                                   isSelectedGraph[buttonIndex] = false;
                                 }
@@ -181,27 +137,16 @@ class PriceScreenState extends State<PriceScreen> {
                           child: (snapshot.connectionState ==
                                   ConnectionState.waiting)
                               ? Container()
-                              : Graph(snapshot.data, selectedCrypto,
-                                  selectedGraphType)),
+                              : Graph(snapshot.data, crypto, graphType)),
                       Center(
-                          //When refactoring this later, use the text of buttons 'USD', etc. and pass as parameters. Something like this: ToggleButtons('USD', 'EUR', 'GBP') or better yet ToggleButtons(currenciesList)
                           child: ToggleButtons(
                         borderWidth: 0.0,
                         splashColor: null,
                         renderBorder: false,
                         children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text('USD'),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text('EUR'),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text('GBP'),
-                          ),
+                          ToggleButton('USD'),
+                          ToggleButton('EUR'),
+                          ToggleButton('GBP'),
                         ],
                         onPressed: (int index) {
                           setState(() {
@@ -210,7 +155,7 @@ class PriceScreenState extends State<PriceScreen> {
                                 buttonIndex++) {
                               if (buttonIndex == index) {
                                 isSelectedCurrency[buttonIndex] = true;
-                                selectedCurrency = currenciesList[buttonIndex];
+                                currency = currenciesList[buttonIndex];
                               } else {
                                 isSelectedCurrency[buttonIndex] = false;
                               }
@@ -221,7 +166,6 @@ class PriceScreenState extends State<PriceScreen> {
                         isSelected: isSelectedCurrency,
                       )),
                     ]),
-                // if  {
                 Center(
                     child: (snapshot.connectionState == ConnectionState.waiting)
                         ? CircularProgressIndicator()

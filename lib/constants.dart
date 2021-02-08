@@ -9,7 +9,7 @@ const List<String> currenciesList = [
   'GBP',
 ];
 
-const List<String> graphType = ['1D', '5D', '1M', '1Y', '5Y'];
+const List<String> graphTypeList = ['1D', '5D', '1M', '1Y', '5Y'];
 const cryptoAPIURL = 'https://api.cryptowat.ch/markets/kraken/';
 const apiKey = 'YOUR-API-KEY-HERE';
 
