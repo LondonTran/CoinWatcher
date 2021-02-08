@@ -1,16 +1,19 @@
-# coin_watcher
+# CoinWatcher
 
-A new Flutter application.
+Displays current and historical prices (USD, GBP, EUR) of Bitcoin, Ethereum, and Litecoin with single and triple-data line charts (1D, 5D, 1M, 1Y, 5Y). Developed with Dart, Flutter, Fl_Chart, and Cryptowatch API.
 
-## Getting Started
+To use this application, you must provide your own API Key. You can register for a free API Key here: https://cryptowat.ch/
 
-This project is a starting point for a Flutter application.
+This project is a work in progress and does not reflect the final product.
 
-A few resources to get you started if this is your first Flutter project:
+Project will be published in the Google Play Store and iOS App Store in January 2021.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Developed by London Tran<br>
+https://twitter.com/londontran<br>
+https://www.linkedin.com/in/londontran<br>
+https://stackoverflow.com/users/3932449/london-tran
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Single Line Chart             |  Triple Line Chart
+:-------------------------:|:-------------------------:
+<img src="images/singleLineChart.jpg" width="500">  |  <img src="images/tripleLineChart.jpg" width="500">
+
