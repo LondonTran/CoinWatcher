@@ -6,8 +6,6 @@ To use this application, you must provide your own API Key. You can register for
 
 This project is a work in progress and does not reflect the final product.
 
-Project will be published in the Google Play Store and iOS App Store in January 2021.
-
 Developed by London Tran<br>
 https://twitter.com/londontran<br>
 https://www.linkedin.com/in/londontran<br>
