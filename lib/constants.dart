@@ -13,7 +13,7 @@ const List<String> graphTypeList = ['1D', '5D', '1M', '1Y', '5Y'];
 const cryptoAPIURL = 'https://api.cryptowat.ch/markets/kraken/';
 const apiKey = 'YOUR-API-KEY-HERE';
 
-const bitcoinGraphColor = Color(0xff4af699);
+const bitcoinGraphColor = Color(0xffff6e69);
 const ethereumGraphColor = Color(0xffaa4cfc);
 const litecoinGraphColor = Color(0xff27b6fc);
 

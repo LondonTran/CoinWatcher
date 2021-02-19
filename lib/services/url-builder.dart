@@ -1,4 +1,4 @@
-import 'package:bitcoin_ticker/constants.dart';
+import 'package:coin_watcher/constants.dart';
 
 class URLBuilder {
   URLBuilder(this.cryptoCurrency, this.currency, this.periodValue);

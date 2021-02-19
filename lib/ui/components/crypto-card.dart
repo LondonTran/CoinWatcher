@@ -15,12 +15,6 @@ class CryptoCard extends StatefulWidget {
   final String name;
   final icon;
 
-  // 1. reverse pricesAndTimes and save it into a new variable
-
-  // 1. initState runs getSpotData(widget.crypto, 'single');
-  // 2. getSpotData(widget.crypto, 'single');
-  // The prices must be of type double at the end.
-
   @override
   _CryptoCardState createState() => _CryptoCardState();
 }
@@ -35,17 +29,9 @@ class _CryptoCardState extends State<CryptoCard> {
   }
 
   void getGraphColor(String crypto) {
-    switch (crypto) {
-      case 'Bitcoin':
-        graphColor = bitcoinGraphColor;
-        break;
-      case 'Ethereum':
-        graphColor = ethereumGraphColor;
-        break;
-      case 'Litecoin':
-        graphColor = litecoinGraphColor;
-        break;
-    }
+    if (crypto == 'Bitcoin') graphColor = bitcoinGraphColor;
+    if (crypto == 'Ethereum') graphColor = ethereumGraphColor;
+    if (crypto == 'Litecoin') graphColor = litecoinGraphColor;
   }
 
   @override

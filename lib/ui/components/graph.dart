@@ -19,6 +19,7 @@ class Graph extends StatefulWidget {
 
 class _GraphState extends State<Graph> {
   bool isShowingSingleDataGraph;
+  bool isFiveYearGraph;
   String timesVariable;
   Map<String, List<dynamic>> reversedPricesAndTimes = {};
   Map<String, List<FlSpot>> graphPoints = {
@@ -44,43 +45,37 @@ class _GraphState extends State<Graph> {
   int firstXAxisLabel;
   int secondXAxisLabel;
 
-  int firstYAxisLabel;
-  int secondYAxisLabel;
-  int thirdYAxisLabel;
-
   @override
   void initState() {
     super.initState();
     isShowingSingleDataGraph = true;
+    checkIfGraphTypeIsFiveYearGraph(widget.graphType);
+    getGraphData(widget.crypto);
   }
 
-  List<FlSpot> getGraphData(String crypto) {
-    List<double> prices = [];
+  void checkIfGraphTypeIsFiveYearGraph(String graphType) {
+    if (graphType == '5Y') isFiveYearGraph = true;
+    if (graphType != '5Y') isFiveYearGraph = false;
+  }
+
+  void getGraphData(String crypto) {
+    Map<String, List<double>> prices = {'BTC': [], 'ETH': [], 'LTC': []};
     getGraphColor(crypto);
     getGraphPoints(crypto, prices);
-    getMinAndMaxPrices(prices);
-    getAxesLabels();
-    return graphPoints[crypto];
+    getMinAndMaxPrices(crypto, prices);
+    getAxisLabels();
   }
 
   void getGraphColor(String crypto) {
-    switch (crypto) {
-      case 'BTC':
-        graphColor = bitcoinGraphColor;
-        break;
-      case 'ETH':
-        graphColor = ethereumGraphColor;
-        break;
-      case 'LTC':
-        graphColor = litecoinGraphColor;
-        break;
-    }
+    if (crypto == 'BTC') graphColor = bitcoinGraphColor;
+    if (crypto == 'ETH') graphColor = ethereumGraphColor;
+    if (crypto == 'LTC') graphColor = litecoinGraphColor;
   }
 
-  void getGraphPoints(String crypto, List prices) {
+  void getGraphPoints(String crypto, Map<String, List<double>> prices) {
     reversePricesAndTimes();
-    extractPrices(crypto, prices);
-    createGraphPoints(crypto, prices);
+    extractPrices(prices);
+    createGraphPoints(prices);
   }
 
   void reversePricesAndTimes() {
@@ -89,11 +84,13 @@ class _GraphState extends State<Graph> {
     });
   }
 
-  void extractPrices(String crypto, List<double> prices) {
-    for (int j = 0; j < reversedPricesAndTimes[crypto].length; j++) {
-      var pricesDouble =
-          roundDouble(double.parse(reversedPricesAndTimes[crypto][j]), 2);
-      prices.add(pricesDouble);
+  void extractPrices(Map<String, List<double>> prices) {
+    for (String crypto in cryptoAbbreviation) {
+      for (int j = 0; j < reversedPricesAndTimes[crypto].length; j++) {
+        var pricesDouble =
+            roundDouble(double.parse(reversedPricesAndTimes[crypto][j]), 2);
+        prices[crypto].add(pricesDouble);
+      }
     }
   }
 
@@ -102,34 +99,38 @@ class _GraphState extends State<Graph> {
     return ((value * mod).round().toDouble() / mod);
   }
 
-  void createGraphPoints(String crypto, List prices) {
-    graphPoints[crypto] = prices.asMap().entries.map((e) {
-      return FlSpot(e.key.toDouble(), e.value);
-    }).toList();
+  void createGraphPoints(Map<String, List<double>> prices) {
+    for (String crypto in cryptoAbbreviation) {
+      graphPoints[crypto] = prices[crypto].asMap().entries.map((e) {
+        return FlSpot(e.key.toDouble(), e.value);
+      }).toList();
+    }
   }
 
-  void getMinAndMaxPrices(List<double> prices) {
-    getMinAndMaxForSingleDataGraph(prices);
+  void getMinAndMaxPrices(String crypto, Map<String, List<double>> prices) {
+    getMinAndMaxForSingleDataGraph(crypto, prices);
     getMinAndMaxForTripleDataGraph(prices);
   }
 
-  void getMinAndMaxForSingleDataGraph(List<double> prices) {
-    minY = prices.reduce(min);
-    maxY = prices.reduce(max);
-    maxX = prices.length.toDouble();
+  void getMinAndMaxForSingleDataGraph(
+      String crypto, Map<String, List<double>> prices) {
+    minY = prices[crypto].reduce(min);
+    maxY = prices[crypto].reduce(max);
+    maxX = prices[crypto].length.toDouble();
   }
 
-  void getMinAndMaxForTripleDataGraph(List<double> prices) {
-    minAndMaxForTripleDataGraph['min'].add(prices.reduce(min));
-    minAndMaxForTripleDataGraph['max'].add(prices.reduce(max));
+  void getMinAndMaxForTripleDataGraph(Map<String, List<double>> prices) {
+    for (String crypto in cryptoAbbreviation) {
+      minAndMaxForTripleDataGraph['min'].add(prices[crypto].reduce(min));
+      minAndMaxForTripleDataGraph['max'].add(prices[crypto].reduce(max));
 
-    minYForTripleDataGraph = minAndMaxForTripleDataGraph['min'].reduce(min);
-    maxYForTripleDataGraph = minAndMaxForTripleDataGraph['max'].reduce(max);
+      minYForTripleDataGraph = minAndMaxForTripleDataGraph['min'].reduce(min);
+      maxYForTripleDataGraph = minAndMaxForTripleDataGraph['max'].reduce(max);
+    }
   }
 
-  void getAxesLabels() {
+  void getAxisLabels() {
     setXAxisLabels();
-    setYAxisLabels();
   }
 
   void setXAxisLabels() {
@@ -138,12 +139,9 @@ class _GraphState extends State<Graph> {
         ((widget.pricesAndTimes['Times'].length * 2) / 3).floor();
   }
 
-  // The operator x ~/ y is more efficient than (x / y).toInt().
-  // Try re-writing the expression to use the '~/' operator.
-  void setYAxisLabels() {
-    firstYAxisLabel = (((maxY - minY) / 4) + minY).toInt();
-    secondYAxisLabel = (((maxY - minY) / 2) + minY).toInt();
-    thirdYAxisLabel = (((maxY - minY) * (3 / 4) + minY)).toInt();
+  double getYAxisInterval(double minY, double maxY) {
+    var interval = ((maxY - minY) / 2).toDouble();
+    return interval;
   }
 
   @override
@@ -172,7 +170,8 @@ class _GraphState extends State<Graph> {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 16.0, left: 6.0),
+                    padding: const EdgeInsets.only(
+                        right: 16.0, top: 15.0, left: 6.0),
                     child: LineChart(
                       isShowingSingleDataGraph
                           ? singleDataGraph()
@@ -186,18 +185,20 @@ class _GraphState extends State<Graph> {
                 ),
               ],
             ),
-            IconButton(
-              icon: Icon(
-                Icons.loop_sharp,
-                color: Colors.white
-                    .withOpacity(isShowingSingleDataGraph ? 1.0 : 0.5),
-              ),
-              onPressed: () {
-                setState(() {
-                  isShowingSingleDataGraph = !isShowingSingleDataGraph;
-                });
-              },
-            )
+            (isFiveYearGraph)
+                ? IconButton(
+                    icon: Icon(
+                      Icons.loop_sharp,
+                      color: Colors.white
+                          .withOpacity(isShowingSingleDataGraph ? 1.0 : 0.5),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isShowingSingleDataGraph = !isShowingSingleDataGraph;
+                      });
+                    },
+                  )
+                : Container()
           ],
         ),
       ),
@@ -208,7 +209,7 @@ class _GraphState extends State<Graph> {
     return LineChartData(
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
-            tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
+            tooltipBgColor: Colors.cyan.withOpacity(0.8),
             getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
               return touchedBarSpots.map((barSpot) {
                 final flSpot = barSpot;
@@ -236,13 +237,11 @@ class _GraphState extends State<Graph> {
           margin: 10,
           interval: 1,
           getTitles: (value) {
-            //1st X-axis label 1/3 across
             if (value.toInt() == firstXAxisLabel) {
               return getXAxisLabels(firstXAxisLabel,
                   reversedPricesAndTimes['Times'], widget.graphType);
             }
 
-            // 2nd X-axis label 2/3 across
             if (value.toInt() == secondXAxisLabel) {
               return getXAxisLabels(secondXAxisLabel,
                   reversedPricesAndTimes['Times'], widget.graphType);
@@ -258,26 +257,10 @@ class _GraphState extends State<Graph> {
             fontSize: 16,
           ),
           getTitles: (value) {
-            //Y AXIS
-
-            // 1st Y-axis label 1/4 of the way up
-            if (value.toInt() == firstYAxisLabel) {
-              return formatNumber(firstYAxisLabel);
-            }
-
-            //2nd Y-axis label 1/2 of the way up
-            if (value.toInt() == secondYAxisLabel) {
-              return formatNumber(secondYAxisLabel);
-            }
-
-            //3rd Y-axis label 3/4 of the way up
-            if (value.toInt() == thirdYAxisLabel) {
-              return formatNumber(thirdYAxisLabel);
-            }
-            return '';
+            return formatNumber(value);
           },
           margin: 10,
-          interval: 1,
+          interval: getYAxisInterval(minY, maxY),
           reservedSize: 40,
         ),
       ),
@@ -303,16 +286,18 @@ class _GraphState extends State<Graph> {
       maxX: maxX,
       maxY: maxY,
       minY: minY,
-      lineBarsData: linesBarData2(),
+      lineBarsData: linesBarData1(),
     );
   }
 
-  List<LineChartBarData> linesBarData2() {
+  List<LineChartBarData> linesBarData1() {
     return [
       LineChartBarData(
-        spots: getGraphData(widget.crypto),
+        spots: graphPoints[widget.crypto],
         isCurved: true,
         curveSmoothness: 0,
+        gradientFrom: Offset(0.3, 0.9),
+        gradientTo: Offset(1, 0),
         colors: [
           graphColor,
         ],
@@ -332,12 +317,12 @@ class _GraphState extends State<Graph> {
     return LineChartData(
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
-            tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
+            tooltipBgColor: Colors.cyan.withOpacity(0.8),
             getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
               return touchedBarSpots.map((barSpot) {
                 final flSpot = barSpot;
                 return LineTooltipItem(
-                  '${flSpot.y.toStringAsFixed(2)}',
+                  '${barSpot.barIndex == 0 ? '${reversedPricesAndTimes['Times'][flSpot.x.toInt()]}\n\n' : ''} ${flSpot.y.toStringAsFixed(2)} ${cryptoAbbreviation[barSpot.barIndex]}',
                   const TextStyle(color: Colors.white),
                 );
               }).toList();
@@ -358,9 +343,8 @@ class _GraphState extends State<Graph> {
             fontSize: 16,
           ),
           margin: 10,
-          interval: null,
+          interval: 1,
           getTitles: (value) {
-            //1st X-axis label 1/3 across
             if (value.toInt() == firstXAxisLabel) {
               return getXAxisLabels(firstXAxisLabel,
                   reversedPricesAndTimes['Times'], widget.graphType);
@@ -382,24 +366,12 @@ class _GraphState extends State<Graph> {
             fontSize: 14,
           ),
           getTitles: (value) {
-            if (value.toInt() == firstYAxisLabel) {
-              return formatNumber(firstYAxisLabel);
-            }
-
-            //2nd Y-axis label 1/2 of the way up
-            if (value.toInt() == secondYAxisLabel) {
-              return formatNumber(secondYAxisLabel);
-            }
-
-            //3rd Y-axis label 3/4 of the way up
-            if (value.toInt() == thirdYAxisLabel) {
-              return formatNumber(thirdYAxisLabel);
-            }
-            return '';
+            return formatNumber(value);
           },
           margin: 10,
           reservedSize: 40,
-          interval: null,
+          interval:
+              getYAxisInterval(minYForTripleDataGraph, maxYForTripleDataGraph),
         ),
       ),
       borderData: FlBorderData(
@@ -424,17 +396,17 @@ class _GraphState extends State<Graph> {
       maxX: maxX,
       maxY: maxYForTripleDataGraph,
       minY: minYForTripleDataGraph,
-      lineBarsData: linesBarData1(),
+      lineBarsData: linesBarData2(),
     );
   }
 
-  List<LineChartBarData> linesBarData1() {
+  List<LineChartBarData> linesBarData2() {
     final LineChartBarData bitcoinData = LineChartBarData(
-      spots: getGraphData('BTC'),
+      spots: graphPoints['BTC'],
       isCurved: true,
       curveSmoothness: 0,
       colors: [
-        const Color(0xff4af699),
+        bitcoinGraphColor,
       ],
       barWidth: 4,
       isStrokeCapRound: true,
@@ -447,11 +419,11 @@ class _GraphState extends State<Graph> {
     );
 
     final LineChartBarData ethereumData = LineChartBarData(
-      spots: getGraphData('ETH'),
+      spots: graphPoints['ETH'],
       isCurved: true,
       curveSmoothness: 0,
       colors: [
-        const Color(0xffaa4cfc),
+        ethereumGraphColor,
       ],
       barWidth: 4,
       isStrokeCapRound: true,
@@ -464,12 +436,10 @@ class _GraphState extends State<Graph> {
     );
 
     final LineChartBarData litecoinData = LineChartBarData(
-      spots: getGraphData('LTC'),
+      spots: graphPoints['LTC'],
       isCurved: true,
       curveSmoothness: 0,
-      colors: [
-        const Color(0xff27b6fc),
-      ],
+      colors: [litecoinGraphColor],
       barWidth: 4,
       isStrokeCapRound: true,
       dotData: FlDotData(

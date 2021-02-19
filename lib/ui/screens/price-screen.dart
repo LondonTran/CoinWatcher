@@ -1,6 +1,6 @@
-import 'package:bitcoin_ticker/data/coin-data.dart';
-import 'package:bitcoin_ticker/ui/components/crypto-card.dart';
-import 'package:bitcoin_ticker/ui/components/graph.dart';
+import 'package:coin_watcher/data/coin-data.dart';
+import 'package:coin_watcher/ui/components/crypto-card.dart';
+import 'package:coin_watcher/ui/components/graph.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../../constants.dart';
@@ -14,13 +14,13 @@ class PriceScreen extends StatefulWidget {
 
 class PriceScreenState extends State<PriceScreen> {
   String currency = 'USD';
-  String graphType = '1M';
-  String crypto = 'LTC';
+  String graphType = '5Y';
+  String crypto = 'BTC';
   Map<String, List<String>> pricesAndTimes = {};
   Future<Map> futureData;
 
-  var isSelectedCrypto = <bool>[false, false, true];
-  var isSelectedGraph = <bool>[false, false, true, false, false];
+  var isSelectedCrypto = <bool>[true, false, false];
+  var isSelectedGraph = <bool>[false, false, false, false, true];
   var isSelectedCurrency = <bool>[true, false, false];
 
   Future<Map> getData() async {
