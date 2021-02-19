@@ -4,8 +4,6 @@ Displays current and historical prices (USD, GBP, EUR) of Bitcoin, Ethereum, and
 
 To use this application, you must provide your own API Key. You can register for a free API Key here: https://cryptowat.ch/
 
-This project is a work in progress and does not reflect the final product.
-
 Developed by London Tran<br>
 https://twitter.com/londontran<br>
 https://www.linkedin.com/in/londontran<br>
