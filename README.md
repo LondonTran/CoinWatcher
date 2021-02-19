@@ -11,5 +11,5 @@ https://stackoverflow.com/users/3932449/london-tran
 
 Single Line Chart             |  Triple Line Chart
 :-------------------------:|:-------------------------:
-<img src="images/singleLineChart.jpg" width="500">  |  <img src="images/tripleLineChart.jpg" width="500">
+<img src="images/singleLine.jpg" width="500">  |  <img src="images/tripleLine.jpg" width="500">
 
