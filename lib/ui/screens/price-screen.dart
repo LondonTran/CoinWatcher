@@ -42,7 +42,7 @@ class PriceScreenState extends State<PriceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Crypto Watcher'),
+        title: Text('Coin Watcher'),
       ),
       body: FutureBuilder<Object>(
           future: futureData,
