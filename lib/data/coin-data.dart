@@ -65,7 +65,7 @@ class CoinData {
 
   void selectCurrentPriceData(List priceAndTimeData) {
     String currentPrice =
-        priceAndTimeData[priceAndTimeData.length - 1][4].toString();
+        priceAndTimeData[priceAndTimeData.length - 1][4].toStringAsFixed(2);
     pricesAndTimes['currentCoinPrices'].add(currentPrice);
   }
 
