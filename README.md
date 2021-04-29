@@ -4,10 +4,12 @@ Displays current and historical prices (USD, GBP, EUR) of Bitcoin, Ethereum, and
 
 To use this application, you must provide your own API Key. You can register for a free API Key here: https://cryptowat.ch/
 
+This application has been published to the Google Play Store here: https://play.google.com/store/apps/details?id=com.londontran.coinwatcher
+
 Developed by London Tran<br>
 https://twitter.com/londontran<br>
 https://www.linkedin.com/in/londontran<br>
-https://stackoverflow.com/users/3932449/london-tran
+
 
 Single Line Chart             |  Triple Line Chart
 :-------------------------:|:-------------------------:
